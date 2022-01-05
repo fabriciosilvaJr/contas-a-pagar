@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html ng-app="AppCAP">
+<head>
+	<title>Sistema de Contas a Pagar</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="js/angular.min.js"></script>
+	<script type="text/javascript" src="js/angular-messages.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/default.css">
+	<script>
+		angular.module("AppCAP", ["ngMessages"]);
+		angular.module("AppCAP").controller("AppCAPCtrl", function ($scope) {
+			$scope.sistema = "Contas a Pagar";
+			$scope.despesas = [
+				{emissao: new Date('2017-10-25'), descricao: 'Energia Elétrica', valor: 200.00, vencimento: new Date('2017-11-25'), status_cor: 'green'},
+				{emissao: new Date('2017-10-03'), descricao: 'Aluguel', valor: 450.90, vencimento: new Date('2017-10-10'), status_cor: 'yellow'},
+				{emissao: new Date('2017-10-05'), descricao: 'Impostos', valor: 1764.98, vencimento: new Date('2017-10-20'), status_cor: 'green'},
+				{emissao: new Date('2017-10-07'), descricao: 'Contador', valor: 370.00, vencimento: new Date('2017-10-15'), status_cor: 'red'},
+				{emissao: new Date('2017-10-10'), descricao: 'Serviços Digitais', valor: 878.54, vencimento: new Date('2017-11-10'), status_cor: 'yellow'},
+				{emissao: new Date('2017-10-05'), descricao: 'Plano de Saúde', valor: 1200.00, vencimento: new Date('2017-10-23'), status_cor: 'gray'},
+			];
+
+
+			$scope.categorias = [
+				{nome: 'Despesas Operacionais', codigo: 1, grupo:'Despesas'},
+				{nome: 'Despesas Financeiras', codigo: 2, grupo:'Despesas'},
+				{nome: 'Custo do Serviço Prestado', codigo: 3, grupo:'Custos'},
+				{nome: 'Despesas com Pessoal', codigo: 4, grupo:'Despesas'},
+			];
+			
+			$scope.adicionarDespesa = function (despesa) {
+				$scope.despesas.push(angular.copy(despesa));
+
+				delete $scope.despesa;
+
+				$scope.FormDespesa.$setPristine();
+			};
+
+			$scope.temMarcada = function (despesas) {
+				return despesas.some(function (despesa) {
+					return despesa.deletar;
+				});
+			}
+
+			$scope.deletarDespesa = function (despesas) {
+				$scope.despesas = despesas.filter(function (despesa) {
+					if (!despesa.deletar) return despesa;
+				});
+			}
+		});
+	</script>
+	
+</head>
+<body ng-controller="AppCAPCtrl">
+	<div class="container">
+		<header ng-include=" 'header.html' "></header>
+		<main>
+			<section class="crud">
+				<div class="row">
+					<form name="FormDespesa">
+						<div class="col-md-4">
+							<label for="emissaoid">Data Emissão</label>
+							<input class="form-control" type="text" name="emissao" id="emissaoid" ng-model="despesa.emissao" ng-required="true" ng-pattern="/^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[12][0-9]{3}$/" > 
+						</div>
+						<div class="col-md-8">
+							<label for="descricaoid">Descrição</label>
+							<input class="form-control" type="text" name="descricao" id="descricaoid" ng-model="despesa.descricao" ng-required="true" ng-minlength="10">
+						</div>
+						<div class="col-md-12">
+							<label for="categoriaid">Categoria</label>
+							<select class="form-control" ng-model="despesa.categoria" ng-options="categoria.nome group by categoria.grupo for categoria in categorias" id="categoriaid" ng-required="true" name="categoria">
+								<option value="">Selecione uma categoria</option>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<label for="valorid">Valor</label>
+							<input class="form-control" type="text" name="valor" id="valorid" ng-model="despesa.valor" ng-required="true">
+						</div>
+						<div class="col-md-8">
+							<label for="vencimentoid">Data Vencimento</label>
+							<input class="form-control" type="text" name="vencimento" id="vencimentoid" ng-model="despesa.vencimento" ng-required="true" ng-pattern="/^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[12][0-9]{3}$/">
+						</div>
+					</form>
+					<div class="col-md-6">
+						<button class="btn btn-primary btn-block" ng-click="adicionarDespesa(despesa)" ng-disabled="FormDespesa.$invalid">Adicionar Despesa</button>
+					</div>
+					<div class="col-md-6">
+						<button class="btn btn-danger btn-block" ng-click="deletarDespesa(despesas)" ng-if="temMarcada(despesas)">Deletar Despesa</button>
+					</div>
+				</div>
+        		<div ng-messages="FormDespesa.emissao.$error">
+					<div ng-message="required" ng-show="FormDespesa.emissao.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+						Informe a Data de Emissão!
+					</div>
+					<div ng-message="pattern" style="margin-top: 5px;" class="alert alert-danger">
+						Data de Emissão Inválida!
+					</div>
+				</div>
+
+
+				<div ng-show="FormDespesa.valor.$invalid && FormDespesa.valor.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+					Informe um valor para a despesa!
+				</div>
+
+				<div ng-show="FormDespesa.descricao.$error.required  && FormDespesa.descricao.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+					Informe a descrição da despesa!
+				</div>
+				<div ng-show="FormDespesa.descricao.$error.minlength  && FormDespesa.descricao.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+					A descrição precisar ser um pouco maior!
+				</div>
+
+				<div ng-show="FormDespesa.categoria.$invalid && FormDespesa.categoria.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+					Uma despesa precisa de categoria!
+				</div>
+
+				<div ng-show="FormDespesa.vencimento.$error.required && FormDespesa.vencimento.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+					Uma despesa precisa de uma Data de Vencimento!
+				</div>
+				<div ng-show="FormDespesa.vencimento.$error.pattern && FormDespesa.vencimento.$dirty" style="margin-top: 5px;" class="alert alert-danger">
+					Data de Vencimento Inválida!
+				</div>
+			</section>
+			<section class="grid">
+				<table class="table table-striped" style="margin-top: 10px;">
+					<tr>
+						<th></th>
+						<th>Emissão</th>
+						<th>Descrição</th>
+						<th>Categoria</th>
+						<th>Valor</th>
+						<th>Vencimento</th>
+						<th>Status</th>
+					</tr>	
+					<tr ng-repeat = "despesa in despesas" ng-class="{marcada: despesa.deletar}">
+						<td><input type="checkbox" name="" ng-model="despesa.deletar"></td>
+						<td>{{despesa.emissao | date:'dd/MM/yyyy'}}</td>
+						<td>{{despesa.descricao}}</td>
+						<td>{{despesa.categoria.nome}}</td>
+						<td>{{despesa.valor | currency:"R$ "}}</td>
+						<td>{{despesa.vencimento | date:'dd/MM/yyyy'}}</td>	
+						<td><div class="circulo"  ng-style="{'background-color': despesa.status_cor}"></div></td>		
+					</tr>
+				</table>
+			</section>
+		</main>
+		<footer  ng-include=" 'footer.html'" ></footer>
+	</div>
+</body>
+</html>

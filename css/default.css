@@ -1,0 +1,57 @@
+.bloco{
+			width: 800px;
+			margin-right: auto;
+			margin-left: auto;
+		}
+		.form-control{
+			margin-bottom: 5px;
+		}
+
+		.circulo{
+			width: 20px;
+			height: 20px;
+			border-radius: 10px;
+			box-shadow: 0 0 4px black;
+		}
+
+		.marcada{
+			background-color: #ce7d7d66 !important;
+		}
+
+		.crud {
+			width: 50%;
+		}
+
+		nav ul {
+			background-color: #2d5989;
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+
+		nav li {
+			float: left;
+		}
+
+		nav li a {
+			text-decoration: none;
+			display: block;
+			font-size: 14px;
+			color: white;
+			padding: 14px 16px;
+		}
+
+		nav li a:hover {
+			background-color:  #356ca9;
+			text-decoration: none;
+			color: white;
+		}
+
+		nav {
+			margin-bottom: 10px;
+		}
+
+		.active {
+			background-color: #356ca9;
+		}
